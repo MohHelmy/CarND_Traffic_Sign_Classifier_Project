@@ -19,14 +19,11 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/visualization.jpg "Visualization"
-[image2]: ./examples/grayscale.jpg "Grayscaling"
-[image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[image1]: ./images/sample_of_dataset.png "sample_of_dataset"
+[image2]: ./images/Distrubition_of_dataset.png "Distrubition_of_dataset"
+[image3]: ./images/test_set.png "test_set"
+[image4]: ./images/Test_new_images.png "Test_new_images"
+
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -57,50 +54,52 @@ Here is an exploratory visualization of the data set. It is a bar chart showing 
 
 ![alt text][image1]
 
+Images labels Distribution:
+
+![alt text][image2]
+
+Random images:
+
+![alt text][image3]
+
 ### Design and Test a Model Architecture
 
 #### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because ...
+#Preprocessing:
+I tried 2 techniques which are CLAHE (Contrast Limited Adaptive Histogram Equalization) and Keras generator images but I got poor results so I just normalized images and convert them to grayscale
+Reasons: because I don’t want the neural network to link between the sign and color because sometimes the same sign has different color.
 
-Here is an example of a traffic sign image before and after grayscaling.
+Model Architecture:
 
-![alt text][image2]
+The main hyperparameters that I was trying to tune were epochs,batch_size and learning rate
+I tried to use more than 30 epochs but I found that the model is overfitting and with lower than 30 the model didn’t reach the target accuracy
+Also when I decrease the learning rate less than 0.001 the model was learning slow.
+For batch size, I tried 64 but also the model was learning slow
+So I used to Train, evaluate and test the model 30 epochs with batch_size = 128, learning rate = 0.001 using Adam optimizer: Solution 
 
-As a last step, I normalized the image data because ...
-
-I decided to generate additional data because ... 
-
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-My final model consisted of the following layers:
 
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
+Implement the network architecture which consists of 6 layers with RELU activation function except last one: 
+Layer 1: convolutional with input 32x32x1 and output 14x14x30 because I used valid padding then added max-pooling 
+Layer 2: convolutional with input 14x14x30 and output 5x5x60 because I used valid padding then added max-pooling 
+Layer 3: full connected with input 5x5x60 and output 2160 
+Layer 4: full connected with input 2160 and output 2000 and dropout = 0.7 
+Layer 5: full connected with input 1000 and output 100 and dropout = 0.7 
+Layer 6: full connected with input 100 and output 43 (no of classes) Model Training:
  
 
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-To train the model, I used an ....
+The main hyperparameters that I was trying to tune were epochs,batch_size and learning rate
+I tried to use till 80 epochs.
+Also when I decrease the learning rate less than 0.001 the model was learning slow.
+For batch size, I tried 64 but also the model was learning slow
+So I used to Train, evaluate and test the model 80 pochs with batch_size = 128, learning rate = 0.001 using Adam optimizer.
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
@@ -112,10 +111,19 @@ My final model results were:
 If an iterative approach was chosen:
 * What was the first architecture that was tried and why was it chosen?I have tried the LeNet arch
 * What were some problems with the initial architecture?The input images have to be resized, yet the output was bad. Also, the LeNET was using single-channel this traffic classifier uses three channels so that was adapted
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
+* How was the architecture adjusted and why was it adjusted? 
+Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
 * Which parameters were tuned? How were they adjusted and why?
-The input images have to be resized, yet the output was bad. Also, the LeNET was using single-channel this traffic when i tried the Lenet it gave bad performance i had to tune a bit the architecture applying the preprocessing and changing the activation layer gave me great results I believe.
+The input images have to be resized, yet the output was bad. Also, the LeNET was using single-channel this traffic when i tried the Lenet it gave bad performance I had to tune a bit the architecture applying the preprocessing and changing the activation layer gave me great results I believe.
 * What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+I used Labnet5 model because it gives good results and I tried to increase the number of filters in the convolutional layers we decreasing the size of filters.
+Also, I increased no of neurons in the Fully connected layer.
+I made these changes because I was classifying 43 classes which is harder than the example I had before in course which classifies 10 classes.
+Tuning different no of epochs, control the size of the fully connected layer, no of filters and use dropout to decrease overfitting
+Also, I printed the accuracy on training data and validation data each epoch to observe the model for not overfitting or underfitting
+Important Notes:
+
+I stop running epochs once I reach the  validation accuracy 94 percent
 
 If a well known architecture was chosen:
 * What architecture was chosen? LeNet
@@ -131,7 +139,7 @@ It is working quite well as it could reach 90% percent accuracy. It predicts 18 
 
 Here are 20 German traffic signs that I found on the web:
 
-[image]: ./images/Test_new_images.png "20 German traffic signs"
+![alt text][image4]
 
 
 
